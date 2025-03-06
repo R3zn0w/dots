@@ -1,0 +1,100 @@
+$theme-black: #000000;
+$theme-lblack: #14213d;
+$theme-orange: #fca311;
+$theme-gray: #e5e5e5;
+$theme-white: #ffffff;
+$theme-red: #ff6961;
+$theme-green: #77DD77;
+
+
+$bar-height: 30px;
+
+* {
+    all: unset;
+    font-size: 16px;
+    font-family: "Hack";
+    // border: 1px solid red
+}
+
+@import "./styles/shutdown_widget.scss"
+
+.systray {
+    // background-color: #fca311;
+    // border: 1px solid red;
+}
+
+.popup {
+    background-color: $theme-lblack;
+    border-radius: 5px;
+    // border: 1px solid red;
+}
+
+
+.popup menuitem {
+    padding: 3px;
+
+    &:hover {
+        background-color: $theme-black;
+        color: $theme-orange
+    }
+
+}
+
+tooltip.background {
+    background-color: $theme-black;
+    border-radius: 4px;
+    color: $theme-gray;
+}
+
+tooltip label {
+    margin: 8px;
+}
+
+.base-box {
+    background-color: $theme-lblack;
+    border: 2px solid rgba($theme-gray, 0.15);
+    border-radius: 4px;
+    transition: 0.3s;
+    &:hover {
+        border: 2px solid rgba($theme-orange, 0.5);
+        transition: 0.3s;
+    }
+}
+
+.int-box {
+    padding: 0px 10px 2px 10px;
+}
+
+.icon-box {
+    font-size: 17px;
+}
+
+
+.graph-rev {
+    min-height: 300px;
+    min-width: 300px;
+    border: 2px solid $theme-lblack;
+    border-radius: 8px 0px 0px 8px;
+    background: $theme-black;
+    color: $theme-orange
+}
+
+.graph-procs {
+    background-color: $theme-lblack;
+    border: 1px solid $theme-black;
+    border-radius: 0px 8px 8px 0px;
+    min-width: 220px;
+    padding: 10px
+}
+
+.active-highlight {
+    color: rgba($theme-orange, 1.0)
+}
+
+.warning-highlight {
+    color: rgba($theme-red, 1.0)
+}
+
+
+
+

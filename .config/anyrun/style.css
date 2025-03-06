@@ -1,0 +1,5 @@
+@define-color my_lightblack #14213d;
+window {
+	background-color: rgba(20,33,61,0.5);
+	font: 16px "Hack"
+}

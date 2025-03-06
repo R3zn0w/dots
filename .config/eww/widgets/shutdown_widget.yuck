@@ -1,0 +1,37 @@
+(defvar shutdown_clicked false)
+
+(defwindow shutdown
+  :monitor 0
+  :stacking "bg"
+  :exclusive "false"
+  :focusable "false"
+  :geometry (geometry
+              :x "5%"
+              :y "10%"
+              :width "120px"
+              :height "120px"
+              :anchor "bottom right")
+  (overlay
+    (eventbox
+      :cursor "cell"
+      :class "shutdownbox"
+      :onclick "${EWW_CMD} update shutdown_clicked=true"
+      (label
+        :text "󰐥"
+        :class "dashboard-icon"
+      )
+    )
+    (box
+      :visible shutdown_clicked
+        (eventbox
+          :class "shutdown-opts red-highlight"
+          :onclick "shutdown now"
+          (label :text "⏼"))
+        (eventbox
+          :class "shutdown-opts"
+          :onclick "${EWW_CMD} update shutdown_clicked=false"
+          (label :text ""))
+    )
+  )
+)
+

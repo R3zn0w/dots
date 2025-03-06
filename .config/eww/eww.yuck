@@ -1,0 +1,159 @@
+(include "./widgets/shutdown_widget.yuck")
+
+(defvar cpu_shown false)
+
+(defpoll time :interval "1s"
+  :initial `date +"%H:%M:%S"`
+`date +"%d/%m/%y  %H:%M:%S"`)
+
+(defwidget _battery [batt]
+  (eventbox :class "base-box"
+    :halign "center"
+    :width 95
+    (box :space-evenly "false"
+      :class "int-box ${batt.status == 'Charging' ? 'active-highlight' : (batt.capacity < 10 ? 'warning-highlight' : '')}"
+      :spacing 5
+      :halign "center"
+      (label :class "icon-box" :text {batt.status == 'Charging' ? "󰂄" : (batt.capacity < 10 ? "󰂃" : (batt.capacity < 30 ? "󱊡" : (batt.capacity < 70 ? "󱊢" : "󱊣")))})
+      (label :text {batt.capacity+"%"}))))
+
+(defwidget _time [curr_time]
+  (eventbox :class "base-box"
+    :width 220
+    (box :class "int-box"
+      :halign "center"
+      (label :text {curr_time})
+    )
+  )
+)
+
+(defwidget _proc [cpu_strut]
+  ; { cores: [{ core, freq, usage }], avg }
+  (eventbox :class "base-box"
+    :onclick {cpu_shown == false ? "${EWW_CMD} update cpu_shown=true" : "${EWW_CMD} update cpu_shown=false"}
+    :halign "center"
+    :width 95
+    (box :class "int-box"
+      :space-evenly "false"
+      :spacing 5
+      :halign "center"
+      (label :class "icon-box" :text {"󰍛"})
+      (label :text {round(cpu_strut.avg, 0)+"%"})
+    )
+  )
+)
+
+(defwidget _proc_graph [cpu_strut]
+  ; { cores: [{ core, freq, usage }], avg }
+  (box
+    :class "graph-rev"
+    (graph
+      :value {round(cpu_strut.avg, 0)}
+      :min 0
+      :max 100
+      :time-range "90s"
+    )
+  )
+)
+
+(defwidget _proc_list [cpu_strut]
+  ; { cores: [{ core, freq, usage }], avg }
+  (box
+    :class "graph-procs"
+    :orientation "v"
+    (for core in {cpu_strut.cores}
+      (label
+        :halign "start"
+      :text "${core.core} - ${core.freq} MHz ~ ${core.usage}%"))
+  )
+)
+;TODO kib/mib scaling
+(defwidget _net [net_strut]
+  ; { <name>: { up, down } }
+  (eventbox :class "base-box"
+    :halign "center"
+    :width 200
+    (box :class "int-box"
+      :space-evenly "false"
+      :spacing 5
+      :halign "center"
+      (label :class "icon-box" :text {" "})
+      (label :text "${round(net_strut.wlp0s20f3.NET_UP/1024, 1)}")
+      (label :class "icon-box" :text {" "})
+      (label :text "${round(net_strut.wlp0s20f3.NET_DOWN/1024, 1)}")
+    )
+  )
+)
+
+(defwidget _memory [mem_strut]
+  ; { total_mem, free_mem, total_swap, free_swap, available_mem, used_mem, used_mem_perc }
+  (eventbox :class "base-box"
+    :halign "center"
+    :tooltip "Max memory ${round(mem_strut.total_mem/1048576, 0)} MiB"
+    (box :orientation "v"
+      :spacing 0
+      (box :class "int-box"
+        :space-evenly "false"
+        :spacing 5
+        :halign "center"
+        (label :class "icon-box" :text {""})
+        (label :text "${round(mem_strut.used_mem/(1048576), 0)} MiB")
+      )
+    )
+  )
+)
+
+
+(defwindow cpu_graph
+  :monitor 0
+  :geometry (geometry
+    :x "50%"
+    :y "6%"
+  )
+  :stacking "fg"
+  :exclusive false
+  (expander
+    :expanded {cpu_shown}
+    (box
+      :orientation "h"
+      :space-evenly false
+      (_proc_graph :cpu_strut {EWW_CPU})
+      (_proc_list :cpu_strut {EWW_CPU})
+    )
+  ))
+
+(defwindow statusbar
+  :monitor 0
+  :geometry (geometry
+    :x "0"
+    :y "0"
+    :width "100%"
+    :height "3%"
+  :anchor "center top")
+  :stacking "fg"
+  :orientation "horizontal"
+  :exclusive true
+  (centerbox
+    (box
+    )
+    (box
+      :space-evenly "false"
+      :halign "center"
+      (_time :curr_time {time})
+    )
+    (box
+      :space-evenly "false"
+      :spacing 5
+      :halign "end"
+      (systray
+        :class "systray"
+        :orientation "h"
+        :prepend-new true
+      )
+      (_proc :cpu_strut {EWW_CPU})
+      (_memory :mem_strut {EWW_RAM})
+      (_net :net_strut {EWW_NET})
+      (_battery :batt {EWW_BATTERY.BAT0})
+    )
+  )
+)

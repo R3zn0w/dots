@@ -1,0 +1,44 @@
+.shutdownbox {
+    background-color: rgba($theme-black,0.2);
+    color: rgba($theme-gray, 0.2);
+    border-radius: 6px;
+    border-color: rgba($theme-gray, 0.1);
+    border-width: 1px;
+    border-style: solid;
+    &:hover {
+      background-color: rgba($theme-gray, 0.1);  
+      transition-duration: 500ms;
+      color: rgba($theme-orange, 0.4);
+      border-color: rgba($theme-orange, 0.4);
+    }
+}
+
+.dashboard-icon {
+    font-size: 80px;
+}
+
+.debug {
+  border: 1px solid red;
+}
+
+.shutdown-opts {
+    background-color: rgba($theme-black,0.9);
+    color: rgba($theme-gray, 0.7);
+    &:hover {
+        background-color: $theme-black;
+        color: rgba($theme-orange, 0.8);
+    }
+}
+
+
+.red-highlight {
+    &:hover {
+        color: rgba($theme-red, 0.8);
+    }
+}
+
+.shutdown-opts label {
+  font-size: 30px;
+}
+
+
