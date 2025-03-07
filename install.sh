@@ -27,6 +27,21 @@ function debug(){
         fi
 }
 
+function os_detect(){
+        if [[ -f /etc/os-release ]]; then
+                . /etc/os-release
+                if [[ -n $ID_LIKE ]]; then
+                        echo "$ID_LIKE"
+                elif [[ -n $ID ]]; then
+                        echo "$ID"
+                else
+                        echo "unknown"
+                fi
+        else
+                echo "unknown"
+        fi
+}
+
 function field_exists(){
 # $1 is searched field, $2 is array of fields
         local search_field="$1"
@@ -113,6 +128,31 @@ else
         dirmk "$g_BACKUPPATH"
 fi
 
+# detect OS to decide installer
+if [[ "$u_NOINSTALL" == "false" ]]; then 
+        detected_os=$(os_detect)
+        case "$detected_os" in
+                debian)
+                        echo "Debian detected, apt will be used"
+                        sudo apt update
+                        g_INSTALLER="sudo DEBIAN_FRONTEND=noninteractive apt install -y "
+                        ;;
+                arch)
+                        echo "Arch detected, pacman will be used"
+                        g_INSTALLER="sudo pacman -S --noconfirm "
+                        ;;
+                unknown)
+                        echo "Couldn't identify OS. Only configs will be moved, handle installation yourself."
+                        u_NOINSTALL=true
+                        ;;
+                *)
+                        echo "Unsupported OS detected. Only configs will be moved, handle installation yourself."
+                        u_NOINSTALL=true
+                        ;;
+        esac
+fi
+
+
 declare -a faulty_packages
 for desired_package in ${mapped_packages[$u_COLL]}; do
         declare -A pkg_info=()
@@ -170,9 +210,9 @@ for desired_package in ${mapped_packages[$u_COLL]}; do
         fi
        
         # install package (if needed)
-        # TODO actually implement that
         if [ "$u_NOINSTALL" = false ] && field_exists "pkgMgrName" "${pkg_fields[@]}";then
                 debug "Running installation of $desired_package"
+                eval "${g_INSTALLER}${pkg_info[pkgMgrName]}"
         fi
 
         # remove colliding configs created by installers and link our config

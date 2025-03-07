@@ -1,7 +1,7 @@
 {
         "collections": {
-                "minimal":["nvim","kitty","zsh","ranger","fonts"],
-                "graphical":["nvim","kitty","zsh","ranger","fonts","hyprland","anyrun","dunst","eww","swaylock"],
+                "minimal":["nvim","kitty","zsh","ranger"],
+                "arch-graphical":["nvim","kitty","zsh","ranger","hyprland","anyrun","dunst","eww","swaylock"],
                 "testcoll":["testpkg","testpkg2","testpkg3","testpkg4"]
         },
         "packages":{
@@ -9,6 +9,44 @@
                         "confSrcPath":"configs/nvim",
                         "confTgtPath":"$HOME/.config/nvim",
                         "pkgMgrName":"neovim"
+                },
+                "kitty":{
+                        "confSrcPath":"configs/kitty",
+                        "confTgtPath":"$HOME/.config/kitty",
+                        "pkgMgrName":"kitty"
+                },
+                "zsh":{
+                        "pkgMgrName":"zsh"
+                },
+                "ranger":{
+                        "confSrcPath":"configs/ranger",
+                        "confTgtPath":"$HOME/.config/ranger",
+                        "pkgMgrName":"ranger"
+                },
+                "hyprland":{
+                        "confSrcPath":"configs/hypr",
+                        "confTgtPath":"$HOME/.config/nvim",
+                        "pkgMgrName":"hyprland"
+                },
+                "anyrun":{
+                        "confSrcPath":"configs/anyrun",
+                        "confTgtPath":"$HOME/.config/anyrun",
+                        "pkgMgrName":"anyrun"
+                },
+                "dunst":{
+                        "confSrcPath":"configs/dunst",
+                        "confTgtPath":"$HOME/.config/dunst",
+                        "pkgMgrName":"dunst"
+                },
+                "eww":{
+                        "confSrcPath":"configs/eww",
+                        "confTgtPath":"$HOME/.config/eww",
+                        "postMsg":"Remember to build and install eww yourself: https://elkowar.github.io/eww/"
+                },
+                "swaylock":{
+                        "confSrcPath":"configs/swaylock",
+                        "confTgtPath":"$HOME/.config/swaylock",
+                        "pkgMgrName":"swaylock"
                 },
                 "testpkg":"",
                 "testpkg3":{
@@ -19,7 +57,6 @@
                         "confSrcPath":"configs/nvim",
                         "confTgtPath":"$HOME/.config/nvim",
                         "pkgMgrName":"neovim"
-                },
-                "kitty":"pc"
+                }
         }
 }
