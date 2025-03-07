@@ -8,17 +8,17 @@ u_NOINSTALL=false
 u_NOBACKUP=false
 u_DEBUG=true #add switch
 
-function print_help(){ # dynamically lookup supported collections
-	echo -e "\n---Dots setup---"
-	echo -e "Sets up the dotfiles, supply the args or suffer the interactive hellhole"
-	echo -e "Arguments:"
-	echo -e "-h/--help - this help"
-	echo -e "-c/--collection <coll_name> - (required) what to set up"
-    for coll in "${!mapped_packages[@]}";do
-            echo -e "\t$coll - ${mapped_packages[$coll]}"
-    done
-	echo -e "-ni/--no-install - by default this tool tries to install the programs for which config is copied. This option disables that"
-	echo -e "-nb/--no-backup - by default this tool backups any previously present config to ~/.config_backed_up/ folder. This option disables that"
+function print_help(){
+        echo -e "\n---Dots setup---"
+        echo -e "Sets up the dotfiles, configure them in config.json"
+        echo -e "Arguments:"
+        echo -e "-h/--help - this help"
+        echo -e "-c/--collection <coll_name> - (required) what to set up"
+        for coll in "${!mapped_packages[@]}";do
+                echo -e "\t$coll - ${mapped_packages[$coll]}"
+        done
+        echo -e "-ni/--no-install - by default this tool tries to install the programs for which config is copied. This option disables that"
+	    echo -e "-nb/--no-backup - by default this tool backups any previously present config to ~/.config_backed_up/ folder. This option disables that"
 }
 
 function debug(){
@@ -63,35 +63,42 @@ done
 
 # parse opts
 while [[ "$#" -gt 0 ]]; do
-	case $1 in
-	-h|--help) print_help
-		exit 0
-		;;
-	--collection=*) u_COLL="${1#*=}"
-		shift
-		;;
-	-c|--collection) u_COLL="$2"
-		shift
-		shift
-		;;
-	-ni|--no-install) u_NOINSTALL=true
-		shift
-		;;
-	-nb|--no-backup) u_NOBACKUP=true
-		shift
-		;;
-	*) echo "Unknown parameter passed: $1"
-		print_help
-		exit 1
-		;;
+	    case $1 in
+	    -h|--help) print_help
+		        exit 0
+		        ;;
+	    --collection=*) u_COLL="${1#*=}"
+		        shift
+		        ;;
+        -c|--collection) u_COLL="$2"
+		        shift
+		        shift
+		        ;;
+	    -ni|--no-install) u_NOINSTALL=true
+		        shift
+		        ;;
+	    -nb|--no-backup) u_NOBACKUP=true
+		        shift
+		        ;;
+	    *) echo "Unknown parameter passed: $1"
+		        print_help
+		        exit 1
+		        ;;
 	esac
 done
 
+# check some prerequisites
+if [ ! -f "$PWD/config.json" ];then
+        echo "Looks like you've forgotten the config.json"
+fi
+# TODO add check for jq
+
+
 # check if selected collection is supported (present in config)
 if [[ ! " ${!mapped_packages[@]} " =~ [[:space:]]${u_COLL}[[:space:]] ]]; then
-    echo -e "No such collection!"
-    print_help
-    exit 1
+        echo -e "No such collection!"
+        print_help
+        exit 1
 fi
 
 # prepare backup space
@@ -131,7 +138,7 @@ for desired_package in ${mapped_packages[$u_COLL]}; do
         fi
 
         # parse the package and get the field keys
-        debug "Getting field values of $desired_package"
+        debug "Getting field keys of $desired_package"
         while read -r field; do
                 pkg_fields+=($field)
         done < <(jq -r ".packages.${desired_package}|keys[]" config.json)
@@ -143,8 +150,6 @@ for desired_package in ${mapped_packages[$u_COLL]}; do
                 done< <(jq -r ".packages.${desired_package}.${field}" config.json)
         done
         
-        declare -p pkg_info
-
         # backup old config
         if field_exists "confSrcPath" "${pkg_fields[@]}"  && field_exists "confTgtPath" "${pkg_fields[@]}" ;then
                 pkg_info[confTgtPath]=$(eval echo "${pkg_info[confTgtPath]}") #terrible hack to evaluate variables in config
@@ -164,27 +169,23 @@ for desired_package in ${mapped_packages[$u_COLL]}; do
                 continue
         fi
        
-	# install package (if needed)
-	# TODO actually implement that
+        # install package (if needed)
+        # TODO actually implement that
         if [ "$u_NOINSTALL" = false ] && field_exists "pkgMgrName" "${pkg_fields[@]}";then
                 debug "Running installation of $desired_package"
         fi
 
-	# remove colliding configs created by installers and link our config
-	if [ -d "${pkg_info[confTgtPath]}" ]; then
-		debug "Removing installer's default config for ${desired_package}"
-		rm -rf "${pkg_info[confTgtPath]}"
-	fi
+        # remove colliding configs created by installers and link our config
+        if [ -d "${pkg_info[confTgtPath]}" ]; then
+		        debug "Removing installer's default config for ${desired_package}"
+                rm -rf "${pkg_info[confTgtPath]}"
+        fi
 	
-	debug "Linking config for ${desired_package}"
-	ln -s "$PWD/${pkg_info[confSrcPath]}" "${pkg_info[confTgtPath]}"
+        debug "Linking config for ${desired_package}"
+        ln -s "$PWD/${pkg_info[confSrcPath]}" "${pkg_info[confTgtPath]}"
 	
-	echo "Package ${desired_package} done!"
+        echo "Package ${desired_package} done!"
 done
-
-# install package
-
-# link the config directories
 
 echo -e "The following packages failed the installation: "
 for package in ${faulty_packages[@]}; do
