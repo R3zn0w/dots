@@ -1,0 +1,25 @@
+{
+        "collections": {
+                "minimal":["nvim","kitty","zsh","ranger","fonts"],
+                "graphical":["nvim","kitty","zsh","ranger","fonts","hyprland","anyrun","dunst","eww","swaylock"],
+                "testcoll":["testpkg","testpkg2","testpkg3","testpkg4"]
+        },
+        "packages":{
+                "nvim":{
+                        "confSrcPath":"configs/nvim",
+                        "confTgtPath":"$HOME/.config/nvim",
+                        "pkgMgrName":"neovim"
+                },
+                "testpkg":"",
+                "testpkg3":{
+                        "confSrcPath":"configs/nvim",
+                        "confTgtPath":"$HOME/.config/nvim"
+                },
+                "testpkg4":{
+                        "confSrcPath":"configs/nvim",
+                        "confTgtPath":"$HOME/.config/nvim",
+                        "pkgMgrName":"neovim"
+                },
+                "kitty":"pc"
+        }
+}
