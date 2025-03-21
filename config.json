@@ -1,7 +1,7 @@
 {
         "collections": {
                 "minimal":["nvim","kitty","zsh","ranger"],
-                "arch-graphical":["nvim","kitty","zsh","ranger","hyprland","anyrun","dunst","eww","swaylock"],
+                "archgraphical":["nvim","kitty","zsh","ranger","hyprland","anyrun","dunst","eww","swaylock"],
                 "testcoll":["testpkg","testpkg2","testpkg3","testpkg4"]
         },
         "packages":{
