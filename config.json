@@ -25,7 +25,7 @@
                 },
                 "hyprland":{
                         "confSrcPath":"configs/hypr",
-                        "confTgtPath":"$HOME/.config/nvim",
+                        "confTgtPath":"$HOME/.config/hypr",
                         "pkgMgrName":"hyprland"
                 },
                 "anyrun":{
