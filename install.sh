@@ -67,15 +67,6 @@ function dirmk(){
 trap 'echo "Something went horribly wrong on line $LINENO"; exit 1' ERR
 
 
-# parse packages in config
-available_colls=($(jq -r '.collections|keys[]' config.json))
-declare -A mapped_packages
-for coll in "${available_colls[@]}"; do
-        while read -r package; do
-                mapped_packages[$coll]="${mapped_packages[$coll]} $package"
-        done < <(jq -r ".collections.${coll}[]" config.json)
-done
-
 # parse opts
 while [[ "$#" -gt 0 ]]; do
 	    case $1 in
@@ -106,27 +97,6 @@ done
 if [ ! -f "$PWD/config.json" ];then
         echo "Looks like you've forgotten the config.json"
 fi
-# TODO add check for jq
-
-
-# check if selected collection is supported (present in config)
-if [[ ! " ${!mapped_packages[@]} " =~ [[:space:]]${u_COLL}[[:space:]] ]]; then
-        echo -e "No such collection!"
-        print_help
-        exit 1
-fi
-
-# prepare backup space
-if [ "$u_NOBACKUP" = true ]; then
-        echo -e "Running without backup, waiting 2s for your interrupt"
-        sleep 2
-else
-        if [ -d "$g_BACKUPPATH" ]; then
-                echo -e "Dropping old backup folder at $g_BACKUPPATH"
-                rm -rf "$g_BACKUPPATH"
-        fi
-        dirmk "$g_BACKUPPATH"
-fi
 
 # detect OS to decide installer
 if [[ "$u_NOINSTALL" == "false" ]]; then 
@@ -152,6 +122,41 @@ if [[ "$u_NOINSTALL" == "false" ]]; then
         esac
 fi
 
+# check if jq is present
+which jq
+if [[ $? -ne 0 ]]; then
+    echo "No jq present, you are going to need it anyway. Installing..."
+    eval "${g_INSTALLER}jq"
+fi
+
+
+# parse packages in config
+available_colls=($(jq -r '.collections|keys[]' config.json))
+declare -A mapped_packages
+for coll in "${available_colls[@]}"; do
+        while read -r package; do
+                mapped_packages[$coll]="${mapped_packages[$coll]} $package"
+        done < <(jq -r ".collections.${coll}[]" config.json)
+done
+
+# check if selected collection is supported (present in config)
+if [[ ! " ${!mapped_packages[@]} " =~ [[:space:]]${u_COLL}[[:space:]] ]]; then
+        echo -e "No such collection!"
+        print_help
+        exit 1
+fi
+
+# prepare backup space
+if [ "$u_NOBACKUP" = true ]; then
+        echo -e "Running without backup, waiting 2s for your interrupt"
+        sleep 2
+else
+        if [ -d "$g_BACKUPPATH" ]; then
+                echo -e "Dropping old backup folder at $g_BACKUPPATH"
+                rm -rf "$g_BACKUPPATH"
+        fi
+        dirmk "$g_BACKUPPATH"
+fi
 
 declare -a faulty_packages
 for desired_package in ${mapped_packages[$u_COLL]}; do
