@@ -123,8 +123,13 @@ if [[ "$u_NOINSTALL" == "false" ]]; then
 fi
 
 # check if jq is present
-which jq
-if [[ $? -ne 0 ]]; then
+rc=0
+command -v jq >/dev/null 2>&1 || rc=$? #hack to avoid triggering set -e (man set)
+if [ "$rc" -ne 0 ]; then
+    if [ "$u_NOINSTALL" = true ]; then
+        echo "No jq present and you refuse installs. Breaking"
+        exit 1
+    fi
     echo "No jq present, you are going to need it anyway. Installing..."
     eval "${g_INSTALLER}jq"
 fi
