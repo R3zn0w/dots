@@ -1,5 +1,72 @@
-@define-color my_lightblack #14213d;
 window {
-	background-color: rgba(20,33,61,0.5);
-	font: 16px "Hack"
+  background-color: rgba(0, 0, 0, 0.92);
+  padding: 0px;
+}
+
+entry {
+  background-color: rgba(20, 33, 61, 0.6);
+  color: #ffffff;
+  font-size: 16px;
+  outline: none;
+  font-weight: bold;
+  padding: 14px 20px;
+  border: transparent;
+  border-bottom: 3px solid #fca311;
+  caret-color: #fca311;
+}
+
+entry:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+entry selection {
+  background-color: #fca311;
+  color: #000000;
+}
+
+list {
+  background: transparent;
+}
+
+row {
+  padding: 10px 20px;
+  color: #e5e5e5;
+  background-color: rgba(20, 33, 61, 0.7);
+  border-bottom: 1px solid rgba(20, 33, 61, 0.6);
+}
+
+
+row:selected {
+  background-image: linear-gradient(to right, rgba(252, 163, 17, 0.2), transparent 60%);
+  color: #fca311;
+  border-left: 3px solid #fca311;
+}
+
+row:hover {
+  background-color: rgba(20, 33, 61, 0.9);
+}
+
+label {
+  color: #e5e5e5;
+  font-size: 15px;
+}
+
+row:selected label {
+  color: #fca311;
+}
+
+.box-entry label {
+  color: rgba(252, 163, 17, 0.5);
+  font-size: 11px;
+  letter-spacing: 2px;
+}
+
+image {
+  color: #e5e5e5;
+  margin-right: 10px;
+}
+
+row:selected image {
+  color: #fca311;
 }
